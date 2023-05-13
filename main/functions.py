@@ -1,15 +1,17 @@
 import json
+from pprint import pprint
 from datetime import datetime
 
 
-def get_json_list(path):
+def get_json_list(json_file):
     """Функция возвращает json список"""
-    with open(path, "r", encoding="utf-8") as file:
-        all_list = json.load(file)
-    return all_list[-6:]
+    #global file_name
+    with open(json_file, "r", encoding="utf-8") as file:
+        j_list = json.load(file)
+        return j_list[-6:]
 
 
-def get_executed_status(status=get_json_list('file.json')):
+def get_executed_status(status):
     """Функция возвращает новый список, со всеми выполненными транзакциями"""
     executed_list = []
     for el in status:
@@ -23,22 +25,22 @@ def get_executed_status(status=get_json_list('file.json')):
     return executed_list
 
 
-def sorted_data(sorted_d=get_executed_status(get_json_list('file.json'))):
+def sorted_data(sorted_d):
     """Функция возвращает список , отсортированный(по убыванию) по дате"""
     sorted_list = sorted(sorted_d, key=lambda x: x['date'], reverse=True)
     return sorted_list
 
 
-def get_date(date=sorted_data(get_executed_status(get_json_list('file.json')))):
+def get_date(dates):
     """Функция возвращает список с датой в формате ^день.месяц.год^"""
-    for el in date:
+    for el in dates:
         get_out_date = datetime.strptime(el['date'], "%Y-%m-%dT%H:%M:%S.%f")
         changed_date = get_out_date.strftime('%d.%m.%Y')
         el['date'] = changed_date
-    return date
+    return dates
 
 
-def get_card_number(number=get_date(sorted_data(get_executed_status(get_json_list('file.json'))))):
+def get_card_number(number):
     """Функция возвращает список с  замаскированным номером карты отправителя"""
     for el in number:
         try:
@@ -56,15 +58,31 @@ def get_card_number(number=get_date(sorted_data(get_executed_status(get_json_lis
     return number
 
 
-def get_sent_number(sent_num=get_card_number(get_date(sorted_data(get_executed_status(get_json_list('file.json')))))):
+def get_sent_number(sent_number):
     """Функция возвращает список с  замаскированным номером счёта/ карты получателя"""
-    for el in sent_num:
+    for el in sent_number:
         key_to = el['to']
         num_get = key_to.split(" ")
         sent_card_num = num_get[-1]
         hidden_sent_num = f"{''.join(num_get[:-1])} **{sent_card_num[-4:]}"
         el['to'] = hidden_sent_num
+    return sent_number
+
+
+def main():
+    file_name = get_json_list('file.json')
+    executed = get_executed_status(file_name)
+    sorted_l = sorted_data(executed)
+    date = get_date(sorted_l)
+    card_num = get_card_number(date)
+    sent_num = get_sent_number(card_num)
+
     return sent_num
+
+
+
+#main()
+
 
 
 
