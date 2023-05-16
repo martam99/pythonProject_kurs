@@ -5,7 +5,6 @@ from datetime import datetime
 
 def get_json_list(json_file):
     """Функция возвращает json список"""
-    #global file_name
     with open(json_file, "r", encoding="utf-8") as file:
         j_list = json.load(file)
         return j_list[-6:]
@@ -67,22 +66,6 @@ def get_sent_number(sent_number):
         hidden_sent_num = f"{''.join(num_get[:-1])} **{sent_card_num[-4:]}"
         el['to'] = hidden_sent_num
     return sent_number
-
-
-def main():
-    file_name = get_json_list('file.json')
-    executed = get_executed_status(file_name)
-    sorted_l = sorted_data(executed)
-    date = get_date(sorted_l)
-    card_num = get_card_number(date)
-    sent_num = get_sent_number(card_num)
-
-    return sent_num
-
-
-
-#main()
-
 
 
 
